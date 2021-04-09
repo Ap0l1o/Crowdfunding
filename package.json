@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "truffle": "^5.1.34-next.0",
+    "vue": "^3.0.11"
+  }
+}
