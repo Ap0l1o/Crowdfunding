@@ -24,6 +24,7 @@ contract CrowdFunding {
     address payable initiator;       // 发起人
     string title;                    // 项目标题
     string info;                     // 项目简介
+    string hash;                    // 上传到IPFS文件的hash
     uint goal;                       // 目标金额
     uint endTime;                    // 众筹结束时间
 
@@ -47,14 +48,15 @@ contract CrowdFunding {
    * @param goal 目标金额
    * @param endTime 结束时间
    */
-  function newFunding(address payable initiator, string memory title, string memory info, uint goal, uint endTime) public returns(uint) {
+  function newFunding(address payable initiator, string memory title, string memory info, string memory hash, uint goal, uint endTime) public returns(uint) {
     require(endTime > block.timestamp);
 
     numFundings = numFundings + 1;  // 众筹项目数量加1
-    Funding storage f = fundings[numFundings];
+    Funding storage f = fundings[numFundings]; // 初始化一个众筹项目，下面是为该项目的相关信息进行赋值
     f.initiator = initiator;
     f.title = title;
     f.info = info;
+    f.hash = hash;
     f.goal = goal;
     f.endTime = endTime;
     f.success = false;
@@ -158,7 +160,7 @@ contract CrowdFunding {
           fundings[ID].uses[useID].agree[i] = 2;
         }
       }
-    checkUse(ID, useID); // 检查使用请求是否已经结束
+    checkUse(ID, useID); // 每次审核别人请求后，都检查使用请求是否已经结束
   }
 
   /**

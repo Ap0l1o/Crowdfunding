@@ -41,7 +41,7 @@
         </template>
 
         <template #action="{text, record}">
-          <a @click="moreDatil(record.index)">查看详情</a>
+          <a @click="moreDetail(record.index)">查看详情</a>
         </template>
 
       </a-table>
@@ -87,7 +87,7 @@
         </template>
 
         <template #action="{text, record}">
-          <a @click="moreDetail(record.index)">查看详情</a>
+          <a @click="moreDetail(record.index)">详情</a>
         </template>
 
       </a-table>

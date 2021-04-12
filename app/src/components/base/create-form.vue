@@ -12,6 +12,14 @@
       :key="field.label"
       :name="name"
     >
+      <a-upload
+        v-if="field.type === 'upload'"
+        :multiple="true"
+        :file-list="fileList"
+        :beforeUpload="beforeUpload"
+      >
+        <a-button> <a-icon type="upload" /> 上传 </a-button>
+      </a-upload>
       <a-input
         v-if="field.type === 'input'"
         v-model:value="model[name]"
@@ -79,9 +87,9 @@
         {{ form.submitHint || '提交' }}
       </a-button>
       <a-divider type="vertical" />
-      <a-button type="default" @click="form.cancel" v-if="form.cancel">{{
-        form.cancelHint || '取消'
-      }}</a-button>
+      <a-button type="default" @click="form.cancel" v-if="form.cancel">
+        {{ form.cancelHint || '取消' }}
+      </a-button>
     </a-form-item>
   </a-form>
 </template>
@@ -89,7 +97,7 @@
 <script>
 import { PropType, ref, reactive } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import Ipfs from 'ipfs-http-client'
 
 export default {
   name: 'CreateForm',
@@ -99,7 +107,7 @@ export default {
     fields: Object,
     form: Object,
   },
-  setup(props) {
+  setup(props, ctx) {
     // 生成规则和文件以及自动补全等需要的函数
     const rules = reactive({})
     const nowFileUploadingCnt = ref(0)
@@ -120,6 +128,7 @@ export default {
     const submitLoading = ref(false)
     const finish = async () => {
       submitLoading.value = true
+      ctx.emit('getHashs', fileHashs.value[0]) // 向父组件传递上传文件的Hash值
       try {
         await props.form.finish()
       } catch (e) {
@@ -137,9 +146,24 @@ export default {
         : {}
     )
 
+    const fileList = ref([])
+    const fileHashs = ref([])
+    const beforeUpload = async (file) => {
+      const ipfs = Ipfs("/ip4/127.0.0.1/tcp/5001")
+      await ipfs.add(file).then((res) => {
+        console.log(res.path)
+        fileHashs.value.push(res.path)
+        var fileListItem = { uid: fileList.value.length, name: file.name + " " + res.path, status:'done' }
+        fileList.value.push(fileListItem)
+        fileList.value = fileList.value.slice(-1) // 限制只允许上传一个文件
+      })
+    }
+
     return {
       rules,
       finish,
+      fileList,
+      beforeUpload,
       submitLoading,
       layout,
       itemLayout,
@@ -147,5 +171,27 @@ export default {
       CopyFields,
     }
   },
+  // data() {
+  //   return {
+  //     fileList: [],
+  //     fileHashs: []
+  //   }
+  // },
+  // methods: {
+  //   async beforeUpload(file) {
+      
+  //     const ipfs = Ipfs("/ip4/127.0.0.1/tcp/5001")
+  //     // const ipfs = Ipfs("api/tcp/5001")
+  //     await ipfs.add(file).then((res) => {
+  //       console.log(res.path)
+  //       this.fileHashs.push(res.path)
+  //       // console.log(res.cid)
+  //       var fileListItem = { uid: this.fileList.length, name: file.name + " " + res.path, status:'done' }
+  //       this.fileList.push(fileListItem)
+  //     })
+      
+  //   }
+  // }
+
 }
 </script>

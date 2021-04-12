@@ -34,7 +34,7 @@
           </a-tag>
         </template>
         <template #action="{record}">
-          <a @click="moreDail(record.index)">查看详情</a>
+          <a @click="moreDetail(record.index)">查看详情</a>
         </template>
       </a-table>
       <!-- 打开发起众筹窗口 -->
@@ -45,7 +45,7 @@
             <h3 style="text-align: center"> 发起众筹 </h3>
           </template>
 
-          <create-form :model="model" :form="form" :fields="fields"></create-form>
+          <create-form :model="model" :form="form" :fields="fields" @getHashs="getHashs"></create-form>
 
         </a-card>
       </my-modal>
@@ -129,9 +129,16 @@ export default defineComponent({
       account: '',
       title: '',
       info: '',
+      hash: '',
       amount: '',
       date: null,
     })
+
+    // 获取从子组件传过来的上传的文件Hash值
+    const getHashs = async (hash:string) => {
+      model.hash = hash
+      console.log("从子组件获得的Hashs: ", hash)
+    }
 
     const fields = reactive<Fields>({
       account: {
@@ -155,6 +162,10 @@ export default defineComponent({
           trigger: 'blur'
         }
       },
+      upload: {
+        type: 'upload',
+        label: '上传文件'
+      },
       amount: {
         type: 'number',
         label: '金额',
@@ -165,6 +176,7 @@ export default defineComponent({
         label: '截止日期',
       }
     })
+
 
     const form = reactive<Form>({
         submitHint: '发起众筹',
@@ -178,9 +190,11 @@ export default defineComponent({
         finish: () => {
           const seconds = Math.ceil(new Date(model.date).getTime() / 1000)
           try {
-            const res = newFunding(model.account, model.title, model.info, model.amount, seconds);
             // 打印测试
-            console.log("the new funding res： " + res)
+            console.log("the new funding model： " )
+            console.log(model.info)
+            console.log(model.hash)
+            const res = newFunding(model.account, model.title, model.info, model.hash, model.amount, seconds);
             // 全局展示众筹成功信息[message 是ant-desing-vue的组件，用于全局展示操作反馈信息]
             message.success("发起众筹成功") 
             closeModel()
@@ -204,14 +218,14 @@ export default defineComponent({
     }
 
     const router = useRouter()
-    const moreDail = (index : number) => {
+    const moreDetail = (index : number) => {
       router.push(`/funding/${index}`)
     }
 
     addListener(fetchData)
     fetchData();
 
-    return { state, columns, isOpen, model, fields, form, openModel, moreDail }
+    return { state, columns, isOpen, model, fields, form, openModel, moreDetail, getHashs }
   }
 });
 </script>

@@ -83,6 +83,9 @@
                 <a-descriptions-item label="众筹介绍">
                     {{ state.data.info }}
                 </a-descriptions-item>
+                <a-descriptions-item label="相关文件(IPFS)">
+                    {{ state.data.hash }}
+                </a-descriptions-item>
 
             </a-descriptions>
             <!-- 如果key为使用请求useRes -->

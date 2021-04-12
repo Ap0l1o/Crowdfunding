@@ -5,7 +5,7 @@ import CrowdFunding from './CrowdFunding.json'
 //@ts-ignore
 const web3 = new Web3(window.ethereum);
 // 创建合约实例
-const contract = new web3.eth.Contract(CrowdFunding.abi, '0x54aC3Db7c9F7E93aD67BAb4492644c0dC7200983');
+const contract = new web3.eth.Contract(CrowdFunding.abi, '0xfab145C64ca079C33400F0d8eA0469f0f6586C5C');
 // const contract = new web3.eth.Contract(CrowdFunding.abi, CrowdFunding.address);
 
 function addListener(fn: Function) {
@@ -17,6 +17,7 @@ export declare interface Funding {
     index: number,
     title: string,
     info: string,
+    hash: string,
     goal: number,
     endTime: number,
     initiator: string,
@@ -108,8 +109,8 @@ async function contribute(id:number, value:number) {
 }
 
 // 发起众筹
-async function newFunding(account:string, title:string, info:string, amount:number, seconds:number) {
-    return await contract.methods.newFunding(account, title, info, Web3.utils.toWei(amount.toString(10), 'ether'), seconds).send({
+async function newFunding(account:string, title:string, info:string, hash:string, amount:number, seconds:number) {
+    return await contract.methods.newFunding(account, title, info, hash, Web3.utils.toWei(amount.toString(10), 'ether'), seconds).send({
         from: account,
         gas: 1000000
     });
