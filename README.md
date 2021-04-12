@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## 开发环境搭建
 
 ### 安装Truffle
@@ -55,7 +54,3 @@ yarn add vue
 
 ![image-20210409190612788](https://ap0l1o.oss-cn-qingdao.aliyuncs.com/img/image-20210409190612788.png)
 
-=======
-# Crowdfunding
-基于以太坊的众筹DApp平台。
->>>>>>> 1e6f75486f62ae2594f26c52a4972e1de246b8cc
